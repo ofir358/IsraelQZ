@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>טריוויה על ארץ ישראל</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #e0f7fa, #fff);
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            color: #00695c;
+        }
+        #question {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        .option {
+            background-color: #80cbc4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #4db6ac;
+        }
+        .correct {
+            background-color: #388e3c !important;
+        }
+        .incorrect {
+            background-color: #e53935 !important;
+        }
+        #score {
+            margin: 20px;
+            font-size: 1.2em;
+        }
+        #fireworks {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: #2e7d32;
+        }
+        @media (max-width: 600px) {
+            .option {
+                font-size: 1em;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>משחק טריוויה - ארץ ישראל</h1>
+    <div id="score">ניקוד: 0 | טעויות: 0/3</div>
+    <div id="question"></div>
+    <div class="options" id="options"></div>
+
+    <div id="fireworks">תשובה נכונה! 🎉</div>
+
+    <script>
+        const questions = [
+            { q: "מי היה הרמטכ"ל במלחמת לבנון השנייה?", options: ["אריאל שרון", "דן חלוץ", "שאול מופז"], answer: "דן חלוץ" },
+            { q: "מהי עיר הבירה של ישראל?", options: ["תל אביב", "חיפה", "ירושלים"], answer: "ירושלים" },
+            { q: "באיזו שנה קמה מדינת ישראל?", options: ["1948", "1956", "1967"], answer: "1948" },
+            { q: "מהי הים שנמצא ממזרח לישראל?", options: ["ים תיכון", "ים סוף", "ים המלח"], answer: "ים המלח" },
+            { q: "איזה הר הוא הגבוה ביותר בישראל?", options: ["הר מירון", "הר תבור", "הר חרמון"], answer: "הר חרמון" },
+            { q: "מהו המטבע של ישראל?", options: ["שקל חדש", "דולר", "לירה"], answer: "שקל חדש" },
+            { q: "איזה נהר עובר בעמק החולה?", options: ["הירדן", "הירמוך", "הבשן"], answer: "הירדן" },
+            { q: "מהי העיר עם הנמל הגדול ביותר בישראל?", options: ["תל אביב", "אשדוד", "חיפה"], answer: "חיפה" },
+            { q: "איפה נמצאת מצדה?", options: ["בנגב", "במדבר יהודה", "בגליל"], answer: "במדבר יהודה" },
+            { q: "איזה מושג מייצג יום העצמאות?", options: ["יום זיכרון לנופלים", "הכרזת המדינה", "מלחמת ששת הימים"], answer: "הכרזת המדינה" },
+            { q: "מי היה ראש הממשלה הראשון של ישראל?", options: ["גולדה מאיר", "בנימין נתניהו", "דוד בן גוריון"], answer: "דוד בן גוריון" },
+            { q: "מהו קיבוץ?", options: ["עיר תיירות", "צורת התיישבות שיתופית", "חברה ביטחונית"], answer: "צורת התיישבות שיתופית" },
+            { q: "מהו האגם הגדול בישראל?", options: ["ים המלח", "כנרת", "אגם החולה"], answer: "כנרת" },
+            { q: "מהי העיר הדרומית ביותר בישראל?", options: ["דימונה", "אילת", "באר שבע"], answer: "אילת" },
+            { q: "מה שמה של מערת הקבורה של האבות?", options: ["מערת צדקיהו", "מערת אליהו", "מערת המכפלה"], answer: "מערת המכפלה" },
+            { q: "איזה חבל ארץ נמצא בצפון הארץ?", options: ["הנגב", "הגליל", "השפלה"], answer: "הגליל" },
+            { q: "מי כתב את התקווה?", options: ["חיים נחמן ביאליק", "נפתלי הרץ אימבר", "אלתרמן"], answer: "נפתלי הרץ אימבר" },
+            { q: "מה שמה של הכנסת הראשונה?", options: ["הכנסת הזמנית", "הכנסת הראשונה", "האספה המכוננת"], answer: "האספה המכוננת" },
+            { q: "מי היה הנשיא הראשון של מדינת ישראל?", options: ["חיים ויצמן", "יצחק בן צבי", "שמעון פרס"], answer: "חיים ויצמן" },
+            { q: "מהי עיר הקודש לשלוש הדתות?", options: ["נצרת", "ירושלים", "חברון"], answer: "ירושלים" },
+            { q: "מהי השפה הרשמית של ישראל?", options: ["ערבית", "אנגלית", "עברית"], answer: "עברית" },
+            { q: "מה שמו של האוניברסיטה הגדולה בירושלים?", options: ["בן גוריון", "העברית", "בר אילן"], answer: "העברית" },
+            { q: "מהי היבשה של ישראל?", options: ["אסיה", "אירופה", "אפריקה"], answer: "אסיה" },
+            { q: "מהו מגדל גבוה בתל אביב?", options: ["מגדלי עזריאלי", "הבורסה", "מגדל שלום"], answer: "מגדלי עזריאלי" },
+            { q: "באיזו שנה פרצה מלחמת ששת הימים?", options: ["1967", "1973", "1956"], answer: "1967" },
+            { q: "מהי עיר העתיקה עם הכותל?", options: ["עכו", "ירושלים", "צפת"], answer: "ירושלים" },
+            { q: "איזו אוניברסיטה יש בנגב?", options: ["בן גוריון", "בר אילן", "טכניון"], answer: "בן גוריון" },
+            { q: "איזה ים נמצא בדרום?", options: ["ים סוף", "הים התיכון", "הים השחור"], answer: "ים סוף" },
+            { q: "מי היה ראש הממשלה בזמן מלחמת יום כיפור?", options: ["גולדה מאיר", "מנחם בגין", "רבין"], answer: "גולדה מאיר" },
+            { q: "איזה אתר תיירות נמצא ליד ים המלח?", options: ["תל מגידו", "מצדה", "גן לאומי בית שאן"], answer: "מצדה" }
+        ];
+
+        let score = 0;
+        let mistakes = 0;
+        let current = 0;
+        const shuffled = questions.sort(() => 0.5 - Math.random());
+
+        function showQuestion() {
+            if (current >= shuffled.length || mistakes >= 3) {
+                document.getElementById('question').textContent = mistakes < 3 ? "כל הכבוד! סיימת את המשחק!" : "נגמרו הניסיונות 😢";
+                document.getElementById('options').innerHTML = "";
+                return;
+            }
+            const q = shuffled[current];
+            document.getElementById('question').textContent = q.q;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = "";
+            q.options.forEach(opt => {
+                const btn = document.createElement("button");
+                btn.className = "option";
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(btn, opt === q.answer);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(button, isCorrect) {
+            if (isCorrect) {
+                button.classList.add("correct");
+                score++;
+                showFireworks();
+                setTimeout(() => {
+                    document.getElementById("fireworks").style.display = "none";
+                    current++;
+                    updateScore();
+                    showQuestion();
+                }, 1000);
+            } else {
+                button.classList.add("incorrect");
+                mistakes++;
+                updateScore();
+                if (mistakes >= 3) {
+                    setTimeout(showQuestion, 1000);
+                }
+            }
+        }
+
+        function updateScore() {
+            document.getElementById("score").textContent = `ניקוד: ${score} | טעויות: ${mistakes}/3`;
+        }
+
+        function showFireworks() {
+            const fireworks = document.getElementById("fireworks");
+            fireworks.style.display = "flex";
+        }
+
+        showQuestion();
+    </script>
+
+</body>
+</html>
